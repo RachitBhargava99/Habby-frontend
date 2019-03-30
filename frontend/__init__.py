@@ -17,7 +17,9 @@ def create_app():
     login_manager.init_app(app)
 
     from frontend.dashboard.routes import dash
+    from frontend.common.routes import common
     app.register_blueprint(dash)
+    app.register_blueprint(common)
 
     db.create_all(app=app)
 

@@ -9,3 +9,5 @@ pymysql
 sqlalchemy
 geocoder
 Flask-WTF
+Pillow
+asyncio

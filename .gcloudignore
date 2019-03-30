@@ -17,3 +17,10 @@
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+
+# Virtual Environment Files:
+.idea/
+venv/
+
+# Ignoring test files upload
+tests/
