@@ -34,3 +34,6 @@ __pycache__/
 
 # Ignoring test files upload
 tests/
+
+#Ignoring local database files
+*/site.db

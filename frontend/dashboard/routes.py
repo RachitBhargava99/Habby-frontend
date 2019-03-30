@@ -13,6 +13,8 @@ dash = Blueprint('dash', __name__)
 # View Function - Homepage / Search Results
 @dash.route('/', methods=['GET'])
 def home():
+    if not current_user.is_authenticated:
+        return redirect(url_for('common.login'))
     if (request.args.get('q') is not None):
         data = {
             "q": f"{request.args.get('q')}",
