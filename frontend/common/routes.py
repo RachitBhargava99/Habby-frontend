@@ -51,7 +51,7 @@ def login():
             print(User.query.filter_by(user_id=response['id']).order_by(User.id.desc()).first().auth_token)
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('dash.dashboard'))
+            return redirect(next_page) if next_page else redirect(url_for('dash.add_habit'))
         else:
             flash(response['error'], 'danger')
     return render_template('login.html', title='Login', form=form)
