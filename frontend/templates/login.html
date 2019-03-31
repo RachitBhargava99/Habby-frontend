@@ -94,12 +94,48 @@
                         </div>
                         <button type="submit" class="btn btn-success btn-block loginbtn">Login</button>
                         <a class="btn btn-default btn-block" href="{{ url_for('common.register') }}">Register</a>
+                        <div id="container">
+                            <div id="login-button"></div>
+                            <div id="profile" class="hidden">
+                                <img id="picture" src="#"/>
+                                <p id="welcome">Welcome!</p>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    window.snapKitInit = () => {
+        snap.loginkit.mountButton("login-button", {
+            clientId: "152d5874-f04d-4014-8363-e99184912a5d",
+            redirectURI: "https://www.habbynow.com/login",
+            scopeList: [
+                "user.display_name",
+                "user.bitmoji.avatar",
+            ],
+            handleResponseCallback: () => {
+                snap.loginkit.fetchUserInfo().then(data => {
+                    alert("Success");
+                    window.location.href = '/snap_login?display_name=' + data["data"]["me"]["displayName"] +
+                    '&snap_pic=' + data["data"]["me"]["bitmoji"]["avatar"];
+                })
+            },
+        })
+    };
+
+    // Load the SDK asynchronously
+    (function (d, s, id) {
+        var js, sjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://sdk.snapkit.com/js/v1/login.js";
+        sjs.parentNode.insertBefore(js, sjs);
+    }(document, "script", "loginkit-sdk"));
+</script>
 <img src="../static/main/img/dog_normal.png" style="position: fixed; float: right; bottom: 1%; right: 1%;">
 <!-- jquery
     ============================================ -->

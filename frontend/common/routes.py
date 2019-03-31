@@ -17,7 +17,8 @@ def register():
     print(form.confirm_password.data)
     if form.validate_on_submit():
         request_response = requests.post(current_app.config['ENDPOINT_ROUTE'] + current_app.config['NORMAL_REGISTER_URL'],
-                                         json = {
+                                         json={
+                                             'isSnap': False,
                                              'name': form.name.data,
                                              'password': form.password.data,
                                              'email': form.email.data
@@ -40,6 +41,7 @@ def login():
     if form.validate_on_submit():
         request_response = requests.post(current_app.config['ENDPOINT_ROUTE'] + current_app.config['LOGIN_URL'],
                                          json={
+                                             'isSnap': False,
                                              'email': form.email.data,
                                              'password': form.password.data,
                                          })
@@ -55,6 +57,57 @@ def login():
         else:
             flash(response['error'], 'danger')
     return render_template('login.html', title='Login', form=form)
+
+
+@common.route('/snap_register', methods=['GET'])
+def snap_register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dash.dashboard'))
+
+    name = request.args.get('display_name')
+    snapPic = request.args.get('snap_pic')
+    if name is not None and snapPic is not None:
+        request_response = requests.post(current_app.config['ENDPOINT_ROUTE'] + current_app.config['NORMAL_REGISTER_URL'],
+                                         json={
+                                             'name': name,
+                                             'password': "password",
+                                             'email': "snapchat@snapchat.com",
+                                             'isSnap': True,
+                                             'snapPic': "undefined"
+                                         })
+        response = request_response.json()
+        if response['status'] == 1:
+            flash(f'Account created for {name}.', 'success')
+        else:
+            flash(response['error'], 'danger')
+    return redirect(url_for('common.login'))
+
+
+@common.route('/snap_login', methods=['POST', 'GET'])
+def snap_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dash.dashboard'))
+
+    name = request.args.get('display_name')
+    snapPic = request.args.get('snap_pic')
+    if name is not None and snapPic is not None:
+        request_response = requests.post(current_app.config['ENDPOINT_ROUTE'] + current_app.config['LOGIN_URL'],
+                                         json={
+                                             'isSnap': True,
+                                             'display_name': name,
+                                             'snap_pic': "undefined"
+                                         })
+        response = request_response.json()
+        if response['status'] == 1:
+            user = User(response['id'], response['name'], response['email'], response['auth_token'])
+            db.session.add(user)
+            db.session.commit()
+            login_user(user, remember=True)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('dash.dashboard'))
+        else:
+            flash(response['error'], 'danger')
+    return redirect(url_for('common.login'))
 
 
 # View Function - User Logout

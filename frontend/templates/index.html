@@ -3,25 +3,26 @@
     <div class="analytics-sparkle-area">
         <div class="container-fluid">
             <div class="row">
-                {% for each in habit_list %}
+                {% for habit in habit_list %}
                     <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                         <div class="analytics-sparkle-line reso-mg-b-30">
                             <div class="analytics-content">
-                                <h5>{{ habit_list['name'] }}</h5>
-                                <h2><span class="counter">{{ habit_list['level'] }}</span><span class="tuition-fees">Level </span>
+                                <h5>{{ habit['name'] }}</h5>
+                                <h2>Level <span class="counter">{{ habit['level'] }}</span>
                                 </h2>
-                                <span class="text-success">{{ habit_list['level_progress'] }}%</span>
+                                <span class="text-success">{{ habit['level_progress'] }}%</span>
                                 <div class="progress m-b-0">
                                     <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50"
-                                         aria-valuemin="0" aria-valuemax="100" style="width:20%;"><span
-                                            class="sr-only">{{ habit_list['level_progress'] }}% Complete</span></div>
+                                         aria-valuemin="0" aria-valuemax="100"
+                                         style="width:{{ habit['level_progress'] }}%;"><span
+                                            class="sr-only">{{ habit['level_progress'] }}% Complete</span></div>
                                 </div>
                                 <span><b>Important Information:</b> You can engage in this activity at most {{ habit['num_left'] }} more times today.</span>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
-                <a href="#">
+                <a href="{{ url_for('dash.add_habit') }}">
                     <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                         <div class="analytics-sparkle-line reso-mg-b-30">
                             <div class="analytics-content">
@@ -30,7 +31,8 @@
                                 <span class="text-danger">100%</span>
                                 <div class="progress m-b-0">
                                     <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="50"
-                                         aria-valuemin="0" aria-valuemax="100" style="width:30%;"><span class="sr-only">100% Complete</span>
+                                         aria-valuemin="0" aria-valuemax="100" style="width:100%;"><span
+                                            class="sr-only">100% Complete</span>
                                     </div>
                                 </div>
                             </div>
@@ -57,20 +59,20 @@
                             </div>
                         </div>
                         <canvas id="canvas" style="height: 356px;"></canvas>
+                        <script src="https://www.chartjs.org/dist/2.8.0/Chart.min.js"></script>
+                        <script src="https://www.chartjs.org/samples/latest/utils.js"></script>
                         <script>
                             var config = {
                                 type: 'line',
                                 data: {
-                                    labels: [{% for date in date_list %}{{ data }}, {% endfor %}],
+                                    labels: [{% for date in date_list %}"{{ date }}", {% endfor %}],
                                     datasets: [
                                         {% for habit in habit_list %}
                                             {
                                                 label: "{{ habit['name'] }}",
                                                 backgroundColor: window.chartColors.red,
-                                                borderColor: window.chartColors.red,
-                                                data: [
-                                                    {{ habit['data'] }}
-                                                ],
+                                                borderColor: getRandomColor(),
+                                                data: {{ habit['data'] }},
                                                 fill: false,
                                             },
                                         {% endfor %}
@@ -95,7 +97,7 @@
                                             display: true,
                                             scaleLabel: {
                                                 display: true,
-                                                labelString: 'Month'
+                                                labelString: 'Days'
                                             }
                                         }],
                                         yAxes: [{
@@ -113,9 +115,16 @@
                                 var ctx = document.getElementById('canvas').getContext('2d');
                                 window.myLine = new Chart(ctx, config);
                             };
+
+                            function getRandomColor() {
+                                var letters = '0123456789ABCDEF'.split('');
+                                var color = '#';
+                                for (var i = 0; i < 6; i++) {
+                                    color += letters[Math.floor(Math.random() * 16)];
+                                }
+                                return color;
+                            }
                         </script>
-                        <script src="https://www.chartjs.org/dist/2.8.0/Chart.min.js"></script>
-                        <script src="https://www.chartjs.org/samples/latest/utils.js"></script>
                     </div>
                 </div>
             </div>
